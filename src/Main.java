@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,10 +24,14 @@ public class Main {
             JTextField filePathField = new JTextField(20);
             JButton analyzeButton = new JButton("Analyze");
             JButton showElementButton = new JButton("Show Elements");
+            JTextField searchField= new JTextField(20);
+            JButton searchButton= new JButton("search ");
             inputPanel.add(new JLabel("File Name:"));
             inputPanel.add(filePathField);
             inputPanel.add(analyzeButton);
             inputPanel.add(showElementButton);
+            inputPanel.add(searchField);
+            inputPanel.add(searchButton);
 
             JTextArea resultArea = new JTextArea(20, 50);
             resultArea.setEditable(false);
@@ -83,6 +89,39 @@ public class Main {
                     frame1.setVisible(true);
                     frame1.setTitle("Article Elements");
                     articleTextArea.setText(text);
+                }
+            });
+
+            //Implementation of search and highlight function
+            searchButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String searchItem= searchField.getText();
+                    DefaultHighlighter highlighter =
+                            (DefaultHighlighter) articleTextArea.getHighlighter();
+                    Highlighter.HighlightPainter painter =
+                            new DefaultHighlighter.DefaultHighlightPainter(Color.YELLOW);
+
+                    //clearing prev highlights
+                    highlighter.removeAllHighlights();
+
+                    if(!searchItem.isEmpty())
+                    {
+                        int index=text.indexOf(searchItem);
+                        while(index>=0) {
+                            try
+                            {
+                                int endIndex= index + searchItem.length();
+                                highlighter.addHighlight(index,endIndex,painter);
+                                index=text.indexOf(searchItem,endIndex);
+                            }
+                            catch(Exception exception)
+                            {
+                                exception.printStackTrace();
+                            }
+                        }
+                    }
+
                 }
             });
 
