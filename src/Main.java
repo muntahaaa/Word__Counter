@@ -1,6 +1,7 @@
 import javax.swing.*;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
+import javax.swing.JOptionPane;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +11,15 @@ import java.io.IOException;
 
 public class Main {
     private static String text;
+
     public static void main(String[] args) {
+
+        if (SwingUtilities.isEventDispatchThread()) {
+            System.out.println("Running on the EDT.");
+        } else {
+            System.out.println("Not running on the EDT.");
+        }
+
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Text Analysis Tool");
@@ -24,8 +33,8 @@ public class Main {
             JTextField filePathField = new JTextField(20);
             JButton analyzeButton = new JButton("Analyze");
             JButton showElementButton = new JButton("Show Elements");
-            JTextField searchField= new JTextField(20);
-            JButton searchButton= new JButton("search ");
+            JTextField searchField = new JTextField(20);
+            JButton searchButton = new JButton("search ");
             inputPanel.add(new JLabel("File Name:"));
             inputPanel.add(filePathField);
             inputPanel.add(analyzeButton);
@@ -40,13 +49,14 @@ public class Main {
             frame.add(inputPanel, BorderLayout.NORTH);
             frame.add(resultScrollPane, BorderLayout.CENTER);
 
-            JFrame frame1=new JFrame("Article Elements: \n");
+            JFrame frame1 = new JFrame("Article Elements: \n");
             frame1.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            JTextArea articleTextArea=new JTextArea(20,40);
+            JTextArea articleTextArea = new JTextArea(20, 40);
+            frame1.setLocation(100, 400);
             articleTextArea.setWrapStyleWord(true);
             articleTextArea.setLineWrap(true);
             articleTextArea.setEditable(false);
-            frame1.add(new JScrollPane(articleTextArea),BorderLayout.CENTER);
+            frame1.add(new JScrollPane(articleTextArea), BorderLayout.CENTER);
             frame1.pack();
 
             analyzeButton.addActionListener(new ActionListener() {
@@ -66,11 +76,6 @@ public class Main {
                     }
                     text = stringBuilder.toString();
 
-
-                    /*articleTextArea.setText(text);
-                    frame1.add(new JScrollPane(articleTextArea),BorderLayout.CENTER);
-                    frame1.pack();
-                    frame1.setVisible(true);*/
 
                     WordCount countWord = new WordCount(text);
                     int wordCount = countWord.countWords();
@@ -96,7 +101,7 @@ public class Main {
             searchButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String searchItem= searchField.getText();
+                    String searchItem = searchField.getText();
                     DefaultHighlighter highlighter =
                             (DefaultHighlighter) articleTextArea.getHighlighter();
                     Highlighter.HighlightPainter painter =
@@ -105,22 +110,19 @@ public class Main {
                     //clearing prev highlights
                     highlighter.removeAllHighlights();
 
-                    if(!searchItem.isEmpty())
-                    {
-                        int index=text.indexOf(searchItem);
-                        while(index>=0) {
-                            try
-                            {
-                                int endIndex= index + searchItem.length();
-                                highlighter.addHighlight(index,endIndex,painter);
-                                index=text.indexOf(searchItem,endIndex);
-                            }
-                            catch(Exception exception)
-                            {
+                    if (!searchItem.isEmpty()) {
+                        int index = text.indexOf(searchItem);
+                        while (index >= 0) {
+                            try {
+                                int endIndex = index + searchItem.length();
+                                highlighter.addHighlight(index, endIndex, painter);
+                                index = text.indexOf(searchItem, endIndex);
+                            } catch (Exception exception) {
                                 exception.printStackTrace();
                             }
                         }
                     }
+
 
                 }
             });
