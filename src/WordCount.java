@@ -19,8 +19,7 @@ class WordCount {
             }
         }
 
-        // Print the total word count
-        //System.out.println("\nTotal number of words: " + wordCount);
+
         return wordCount;
     }
 }

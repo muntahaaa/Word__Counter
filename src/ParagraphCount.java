@@ -13,13 +13,11 @@ public class ParagraphCount {
 
         // Split the text into paragraphs based on the delimiter
         String[] paragraphs = text.split(paragraphDelimiter);
-       /* for (String word : paragraphs) {
-            System.out.println(word);
-        }*/
+
 
         int paragraphCount = paragraphs.length;
 
-        //System.out.println("Total number of paragraphs: " + paragraphCount);
+
         return paragraphCount;
     }
 
