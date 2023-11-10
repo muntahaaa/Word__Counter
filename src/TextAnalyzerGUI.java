@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-
+import  java.util.List;
 public class TextAnalyzerGUI {
     private JFrame frame;
     private JTextArea articleTextArea;
@@ -33,13 +33,18 @@ public class TextAnalyzerGUI {
         JButton showElementButton = new JButton("Show Elements");
         searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
+        JButton frequentWordsButton= new JButton("Most frequent words: ");
+        JButton uniqueWordsButton = new JButton("Unique Words");
 
+        uniqueWordsButton.setBounds(10, 10, 120, 30);
+        inputPanel.add(uniqueWordsButton);
         inputPanel.add(new JLabel("File Name:"));
         inputPanel.add(filePathField);
         inputPanel.add(analyzeButton);
         inputPanel.add(showElementButton);
         inputPanel.add(searchField);
         inputPanel.add(searchButton);
+        inputPanel.add(frequentWordsButton);
 
         resultArea = new JTextArea(20, 50);
         resultArea.setEditable(false);
@@ -80,6 +85,21 @@ public class TextAnalyzerGUI {
             }
         });
 
+        frequentWordsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayMostFrequentWords();
+            }
+        });
+
+        uniqueWordsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayUniqueWords();
+            }
+        });
+
+
         frame.pack();
         frame.setVisible(true);
     }
@@ -98,14 +118,28 @@ public class TextAnalyzerGUI {
         }
         text = stringBuilder.toString();
 
+
         WordCount countWord = new WordCount(text);
         int wordCount = countWord.countWords();
         ParagraphCount countPara = new ParagraphCount(text);
         int paragraphCount = countPara.paragraphCounter();
 
+
         resultArea.append("\nTotal number of words: " + wordCount + "\n" +
                 "Total number of paragraphs: " + paragraphCount);
     }
+
+    private void displayMostFrequentWords() {
+        int limit = 5; // Set the limit as needed
+
+        TextAnalyzer textAnalyzer = new TextAnalyzer(text);
+        List<String> mostFrequentWords = textAnalyzer.getMostFrequentWords(limit);
+
+
+        String message = "Most Frequent Words:\n" + String.join(", ", mostFrequentWords);
+        JOptionPane.showMessageDialog(frame, message, "Most Frequent Words", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 
     private void showElementButtonAction() {
         JFrame frame1 = new JFrame("Article Elements");
@@ -126,7 +160,22 @@ public class TextAnalyzerGUI {
 
         highlighter.removeAllHighlights();
 
-        if (!searchItem.isEmpty()) {
+
+        if (searchItem.isEmpty() || text.indexOf(searchItem) == -1)
+        {
+            JFrame frame2 = new JFrame("Not found!");
+            frame2.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame2.setLocation(100, 400);
+            frame2.add(new JScrollPane(articleTextArea), BorderLayout.CENTER);
+            frame2.pack();
+
+            frame2.setVisible(true);
+            JOptionPane.showMessageDialog(frame2, "Sorry,Word not found!", "Error", JOptionPane.ERROR_MESSAGE);
+
+
+        }
+
+        else {
             int index = text.indexOf(searchItem);
             while (index >= 0) {
                 try {
@@ -137,13 +186,18 @@ public class TextAnalyzerGUI {
                     exception.printStackTrace();
                 }
             }
-        } else {
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null, "No search item entered",
-                        "Search Error", JOptionPane.ERROR_MESSAGE);
-            });
         }
     }
+
+    private void displayUniqueWords() {
+        TextAnalyzer textAnalyzer = new TextAnalyzer(text);
+        List<String> uniqueWords = textAnalyzer.getUniqueWords(5);
+
+        // Display the unique words in a dialog or any other suitable way
+        String message = "Unique Words:\n" + String.join(", ", uniqueWords);
+        JOptionPane.showMessageDialog(frame, message, "Unique Words", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 
 
 }

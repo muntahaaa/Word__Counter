@@ -5,6 +5,7 @@ import java.io.IOException;
 public class ParagraphCount {
    String text;
     public ParagraphCount(String para){
+
         text=para;
     }
     public int paragraphCounter() {
